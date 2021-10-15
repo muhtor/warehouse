@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'crm_server.urls'
+ROOT_URLCONF = 'warehouse.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'crm_server.wsgi.application'
+WSGI_APPLICATION = 'warehouse.wsgi.application'
 
 
 # Database

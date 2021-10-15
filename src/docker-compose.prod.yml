@@ -2,69 +2,57 @@ version: '3'
 
 services:
 
-  redis:
-    image: redis:latest
-    networks:
-      - redisnet
-      - main_prod
-
-  tezproddb:
-    container_name: tezproddb
+  warehousedb:
+    container_name: warehousedb
     image: postgres:12.2
     environment:
-      POSTGRES_DB: db_tbserver_prod
-      POSTGRES_USER: tb_user_prod
-      POSTGRES_PASSWORD: tb_pass_prod
+      POSTGRES_DB: db_warehouse_prod
+      POSTGRES_USER: warehouse_user_prod
+      POSTGRES_PASSWORD: warehouse_pass_prod
     networks:
-      - main_prod
-      - redisnet
+      - warehouse_prod
     volumes:
-        - tezdb_data_prod:/var/lib/postgresql/tezbordata/
+        - warehousedb_data_prod:/var/lib/postgresql/warehousedata/
 
-  tezweb_prod:
-    container_name: tezweb_prod
+  warehouse_prod:
+    container_name: warehouse_prod
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: daphne -b 0.0.0.0 -p 4040 tbserver.asgi:application
+    command: gunicorn warehouse.wsgi:application --bind 0.0.0.0:4545
     volumes:
-      - static_volume_tezbor_prod:/home/app/web/static
-      - media_volume_tezbor_prod:/home/app/web/media
+      - static_volume_warehouse_prod:/home/app/web/static
+      - media_volume_warehouse_prod:/home/app/web/media
     ports:
-      - "4040:4040"
+      - "4545:4545"
     depends_on:
-      - tezproddb
-    links:
-      - redis
+      - warehousedb
     networks:
-      - main_prod
-      - redisnet
+      - warehouse_prod
     env_file: 
       - .env.prod
 
-  teznginx:
-    container_name: teznginx
+  warehousenginx:
+    container_name: warehousenginx
     restart: always
     build: ./nginx
 
     ports:
-      - "3030:3030"
+      - "4242:4242"
     networks:
-      - main_prod
-      - redisnet
+      - warehouse_prod
     volumes:
-      - static_volume_tezbor_prod:/home/app/web/static
-      - media_volume_tezbor_prod:/home/app/web/media
+      - static_volume_warehouse_prod:/home/app/web/static
+      - media_volume_warehouse_prod:/home/app/web/media
     depends_on:
-      - tezweb_prod
+      - warehouse_prod
 
 volumes:
-    tezdb_data_prod:
-    static_volume_tezbor_prod:
-    media_volume_tezbor_prod:
+    warehousedb_data_prod:
+    static_volume_warehouse_prod:
+    media_volume_warehouse_prod:
   
 networks:
-  redisnet:
-  main_prod:
+  warehouse_prod:
     driver: bridge
   
