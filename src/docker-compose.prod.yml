@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: warehouse_user_prod
       POSTGRES_PASSWORD: warehouse_pass_prod
     networks:
-      - warehouse_prod
+      - warehouse_prod_network
     volumes:
         - warehousedb_data_prod:/var/lib/postgresql/warehousedata/
 
