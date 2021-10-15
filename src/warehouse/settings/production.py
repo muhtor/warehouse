@@ -1,6 +1,6 @@
 from .settings import *
 
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = ["localhost", "magician.casa"]
 
 DATABASES = {
     'default': {
